@@ -23,6 +23,18 @@
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
     <!--Favicon-->
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}"/>
+    <style>
+        #dataTable_filter {
+            display: inline-block !important;
+            float: right;
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+
+        .dt-buttons {
+            display: inline-block !important;
+        }
+    </style>
 
     {% block stylesheets %}{% endblock stylesheets %}
 

@@ -27,10 +27,8 @@ class Sale(models.Model):
 
 
 class SaleDetail(models.Model):
-    sale = models.ForeignKey(
-        Sale, models.DO_NOTHING, db_column='sale')
-    product = models.ForeignKey(
-        Product, models.DO_NOTHING, db_column='product')
+    sale = models.ForeignKey(Sale, models.DO_NOTHING, db_column='sale')
+    product = models.ForeignKey(Product, models.DO_NOTHING, db_column='product')
     price = models.FloatField()
     quantity = models.IntegerField()
     total_detail = models.FloatField()

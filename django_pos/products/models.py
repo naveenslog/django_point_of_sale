@@ -1,7 +1,6 @@
 from django.db import models
 from django.forms import model_to_dict
 
-
 class Category(models.Model):
     STATUS_CHOICES = (  # new
         ("ACTIVE", "Active"),
@@ -26,25 +25,24 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    STATUS_CHOICES = (  # new
+    STATUS_CHOICES = (
         ("ACTIVE", "Active"),
         ("INACTIVE", "Inactive")
     )
 
     name = models.CharField(max_length=256)
-    description = models.TextField(max_length=256)
+    description = models.TextField(max_length=500)
+    image_url = models.URLField(blank=True, null=True, help_text="Image of the food item")
     status = models.CharField(
         choices=STATUS_CHOICES,
         max_length=100,
         verbose_name="Status of the product",
     )
-    category = models.ForeignKey(
-        Category, related_name="category", on_delete=models.CASCADE, db_column='category')
+    category = models.ForeignKey('Category', related_name="category", on_delete=models.CASCADE, db_column='category')
 
     price = models.FloatField(default=0)
 
     class Meta:
-        # Table's name
         db_table = "Product"
 
     def __str__(self) -> str:
@@ -57,4 +55,5 @@ class Product(models.Model):
         item['category'] = self.category.name
         item['quantity'] = 1
         item['total_product'] = 0
+        item['image_url'] = self.image_url
         return item
