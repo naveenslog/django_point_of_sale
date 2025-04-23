@@ -30,25 +30,48 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-DJANGO_APPS = [
-    "django.contrib.admin",
+SHARED_APPS = [
+    "django_tenants",
+    "tenant",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.admin",
+    "crum",
 ]
 
-LOCAL_APPS = [
+TENANT_APPS = [
+    "authentication",
     "customers",
-    "pos",
     "products",
     "sales",
+    "pos",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+INSTALLED_APPS = SHARED_APPS + TENANT_APPS
+
+TENANT_MODEL = "tenant.Client"
+TENANT_DOMAIN_MODEL = "tenant.Domain"
+
+DATABASE_ROUTERS = (
+    "django_tenants.routers.TenantSyncRouter",
+)
+
+AUTHENTICATION_BACKENDS = [
+    'tenant.backends.TenantAwareAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+AUTH_USER_MODEL = 'tenant.TenantUser'
+# Tenant-specific session settings
+SESSION_COOKIE_DOMAIN = None  # Important for multi-tenant auth separation
+SESSION_COOKIE_NAME = 'tenant_specific_sessionid'
+CSRF_COOKIE_NAME = 'tenant_specific_csrftoken'
 
 MIDDLEWARE = [
+    "django_tenants.middleware.main.TenantMainMiddleware",
+    "crum.CurrentRequestUserMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -60,9 +83,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "django_pos.urls"
 LOGIN_URL = '/accounts/login/'
-# Route defined in authentication/urls.py
+
 LOGIN_REDIRECT_URL = "authentication:home"
-# Route defined in authentication/urls.py
 LOGOUT_REDIRECT_URL = "authentication:login"
 
 # ROOT dir for templates
@@ -90,13 +112,33 @@ WSGI_APPLICATION = "django_pos.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django_tenants.postgresql_backend',
+#         'NAME': 'pos_db',
+#         'USER': 'pos_user',
+#         'PASSWORD': 'pos_password',
+#         'HOST': 'db',
+#         'PORT': '5432',
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django_tenants.postgresql_backend',
+        'NAME': os.getenv('POSTGRES_DB', 'pos_db'),
+        'USER': os.getenv('POSTGRES_USER', 'pos_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'pos_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
