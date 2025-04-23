@@ -1,17 +1,19 @@
 
 from django.contrib import admin
 from django.urls import include, path
+from django.shortcuts import render
+from products.models import Product
+
+def product_list_view(request):
+    products = Product.objects.select_related('category').filter(status='ACTIVE')
+    return render(request, 'products/product_list.html', {'products': products})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Authentication: Login and Logout
     path('', include('authentication.urls')),
-    # Index
     path('', include('pos.urls')),
-    # Products
     path('products/', include('products.urls')),
-    # Customers
     path('customers/', include('customers.urls')),
-    # Sales
     path('sales/', include('sales.urls')),
+    path('products-list/', product_list_view, name='product_list'),
 ]

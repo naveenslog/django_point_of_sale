@@ -1,7 +1,7 @@
 asgiref==3.6.0
 autopep8==2.0.1
 Brotli==1.0.9
-cffi==1.15.1
+cffi
 cssselect2==0.7.0
 Django==4.1.5
 django-environ==0.10.0
@@ -9,7 +9,7 @@ flake8==6.0.0
 fonttools==4.38.0
 html5lib==1.1
 mccabe==0.7.0
-Pillow==9.4.0
+# Pillow
 pycodestyle==2.10.0
 pycparser==2.21
 pydyf==0.5.0

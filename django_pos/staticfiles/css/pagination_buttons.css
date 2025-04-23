@@ -6,3 +6,7 @@
 .dataTables_filter input {
     border-radius: 5px;
 }
+
+#dataTable_filter{
+    display: inline-block !important;
+}
