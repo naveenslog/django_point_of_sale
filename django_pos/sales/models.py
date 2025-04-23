@@ -2,12 +2,11 @@ from django.db import models
 import django.utils.timezone
 from customers.models import Customer
 from products.models import Product
+from common.models import AuditModel
 
-
-class Sale(models.Model):
+class Sale(AuditModel):
     date_added = models.DateTimeField(default=django.utils.timezone.now)
-    customer = models.ForeignKey(
-        Customer, models.DO_NOTHING, db_column='customer')
+    customer = models.ForeignKey(Customer, models.DO_NOTHING, db_column='customer')
     sub_total = models.FloatField(default=0)
     grand_total = models.FloatField(default=0)
     tax_amount = models.FloatField(default=0)

@@ -1,7 +1,7 @@
 from django.db import models
+from common.models import AuditModel
 
-
-class Customer(models.Model):
+class Customer(AuditModel):
     first_name = models.CharField(max_length=256)
     last_name = models.CharField(max_length=256, blank=True, null=True)
     address = models.TextField(max_length=256, blank=True, null=True)
