@@ -16,4 +16,5 @@ urlpatterns = [
     path('customers/', include('customers.urls')),
     path('sales/', include('sales.urls')),
     path('products-list/', product_list_view, name='product_list'),
+    path('inventory/', include('inventory.urls')),
 ]

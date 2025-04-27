@@ -1,0 +1,129 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Material Details{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block heading %}Material Details{% endblock heading %}
+
+{% block content %}
+<!--Go back-->
+<div class="row ml-0 mb-3">
+    <a href="{% url 'inventory:material_list' %}">
+        <button type="button" class="btn btn-info font-weight-bold">
+            <i class="fas fa-long-arrow-alt-left mr-2"></i>
+            Go back
+        </button>
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Material Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ material.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ material.description|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Unit of Measurement</th>
+                        <td>{{ material.unit_of_measurement }}</td>
+                    </tr>
+                    <tr>
+                        <th>Current Stock</th>
+                        <td>
+                            {% if inventory %}
+                                {{ inventory.stock_quantity }} {{ material.unit_of_measurement }}
+                            {% else %}
+                                0 {{ material.unit_of_measurement }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-warning btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-edit"></i>
+                        </span>
+                        <span class="text">Edit Material</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
+                <a href="{% url 'inventory:transaction_add' %}?material={{ material.id }}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus mr-1"></i> New Transaction
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Worker</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.date|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'order' %}
+                                        <span class="badge badge-success">Order</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Usage</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.quantity }} {{ material.unit_of_measurement }}</td>
+                                <td>
+                                    {% if transaction.worker %}
+                                        {{ transaction.worker.user.get_full_name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No transactions found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+{% endblock javascripts %}

@@ -1,0 +1,87 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Inventory{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block heading %}Inventory Overview{% endblock heading %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">All Materials</h6>
+            </div>
+            <div class="card-body">
+                {% if low_stock %}
+                <div class="alert alert-warning">
+                    <strong>Low Stock Alert!</strong> The following items have less than 10 units in stock.
+                    <ul class="mb-0 mt-2">
+                        {% for item in low_stock %}
+                        <li>
+                            <a href="{% url 'inventory:material_details' item.material.id %}">
+                                {{ item.material.name }} - {{ item.stock_quantity }} {{ item.material.unit_of_measurement }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Description</th>
+                                <th>Unit</th>
+                                <th>Current Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in inventory_items %}
+                            <tr>
+                                <td>{{ item.material.name }}</td>
+                                <td>{{ item.material.description|default:"-"|truncatechars:30 }}</td>
+                                <td>{{ item.material.unit_of_measurement }}</td>
+                                <td>{{ item.stock_quantity }}</td>
+                                <td>
+                                    {% if item.stock_quantity < 10 %}
+                                        <span class="badge badge-warning">Low Stock</span>
+                                    {% else %}
+                                        <span class="badge badge-success">In Stock</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'inventory:material_details' item.material.id %}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'inventory:transaction_add' %}?material={{ item.material.id }}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable();
+    });
+</script>
+{% endblock javascripts %}

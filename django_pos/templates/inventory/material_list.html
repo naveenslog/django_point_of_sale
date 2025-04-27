@@ -1,0 +1,402 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Raw Materials{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .ai-order-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+    .ai-order-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 24px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    .ai-order-btn:hover {
+        transform: scale(1.1);
+    }
+    .ai-order-panel {
+        position: absolute;
+        bottom: 70px;
+        right: 0;
+        width: 350px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        display: none;
+        overflow: hidden;
+    }
+    .ai-order-header {
+        background: #4e73df;
+        color: white;
+        padding: 15px;
+        font-weight: bold;
+    }
+    .ai-order-body {
+        padding: 15px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .mic-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 20px;
+    }
+    .mic-btn.listening {
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+    .order-preview {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+    }
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .order-item strong {
+        color: #4e73df;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block heading %}Raw Materials{% endblock heading %}
+
+{% block content %}
+<!--Create new material-->
+<div class="row ml-0 mb-3">
+    <a href="{% url 'inventory:material_add' %}">
+        <button type="button" class="btn btn-success font-weight-bold">
+            <i class="fas fa-plus mr-2"></i>
+            Add New Material
+        </button>
+    </a>
+</div>
+
+<!-- DataTable -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Materials List</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Unit</th>
+                        <th>Current Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for material in materials %}
+                    <tr>
+                        <td>{{ material.name }}</td>
+                        <td>{{ material.description|default:"-"|truncatechars:50 }}</td>
+                        <td>{{ material.unit_of_measurement }}</td>
+                        <td>
+                            {% with inventory=material.inventory_set.first %}
+                                {% if inventory %}
+                                    {{ inventory.stock_quantity }} {{ material.unit_of_measurement }}
+                                {% else %}
+                                    0 {{ material.unit_of_measurement }}
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'inventory:material_details' material.id %}" class="text-decoration-none">
+                                <button type="button" class="btn btn-info btn-sm" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- AI Order Floating Button -->
+<div class="ai-order-container">
+    <div class="ai-order-panel" id="aiOrderPanel">
+        <div class="ai-order-header">
+            <i class="fas fa-robot mr-2"></i>AI Order Assistant
+        </div>
+        <div class="ai-order-body">
+            <div class="text-center mb-3">
+                <p>Click the microphone and speak your order</p>
+                <button id="startListening" class="btn btn-danger mic-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+            
+            <div id="transcriptContainer" style="display: none;">
+                <h6>Your Order:</h6>
+                <div class="form-group">
+                    <textarea id="orderText" class="form-control" rows="3" placeholder="Your order will appear here..."></textarea>
+                </div>
+                
+                <div id="orderPreview" class="order-preview" style="display: none;">
+                    <h6>Order Preview:</h6>
+                    <div class="order-item">
+                        <span>Material:</span>
+                        <strong id="previewMaterial">-</strong>
+                    </div>
+                    <div class="order-item">
+                        <span>Quantity:</span>
+                        <strong id="previewQuantity">-</strong>
+                    </div>
+                    <div class="order-item">
+                        <span>Unit:</span>
+                        <strong id="previewUnit">-</strong>
+                    </div>
+                    <div class="order-item">
+                        <span>Purpose:</span>
+                        <strong id="previewPurpose">-</strong>
+                    </div>
+                </div>
+                
+                <div class="text-right mt-3">
+                    <button id="cancelOrder" class="btn btn-secondary mr-2">Cancel</button>
+                    <button id="submitOrder" class="btn btn-primary">
+                        <i class="fas fa-paper-plane mr-1"></i> Submit Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button id="aiOrderButton" class="btn btn-primary ai-order-btn">
+        <i class="fas fa-robot"></i>
+    </button>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize DataTable
+    $('#dataTable').DataTable();
+    
+    // AI Order Panel Toggle
+    const aiOrderBtn = $('#aiOrderButton');
+    const aiOrderPanel = $('#aiOrderPanel');
+    
+    aiOrderBtn.click(function() {
+        aiOrderPanel.toggle();
+    });
+    
+    // Close panel when clicking outside
+    $(document).mouseup(function(e) {
+        if (!aiOrderPanel.is(e.target) && aiOrderPanel.has(e.target).length === 0 && 
+            !aiOrderBtn.is(e.target) && aiOrderBtn.has(e.target).length === 0) {
+            aiOrderPanel.hide();
+        }
+    });
+    
+    // Speech Recognition
+    const startListening = $('#startListening');
+    const orderText = $('#orderText');
+    const transcriptContainer = $('#transcriptContainer');
+    const orderPreview = $('#orderPreview');
+    
+    let recognition;
+    try {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+            startListening.addClass('listening');
+            orderText.val('Listening...');
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = Array.from(event.results)
+                .map(result => result[0])
+                .map(result => result.transcript)
+                .join('');
+            
+            orderText.val(transcript);
+            transcriptContainer.show();
+        };
+        
+        recognition.onerror = function(event) {
+            Swal.fire('Error', `Speech recognition error: ${event.error}`, 'error');
+            startListening.removeClass('listening');
+        };
+        
+        recognition.onend = function() {
+            startListening.removeClass('listening');
+            if (orderText.val().trim() && orderText.val() !== 'Listening...') {
+                processOrderText(orderText.val());
+            }
+        };
+        
+        startListening.click(function() {
+            try {
+                recognition.start();
+                transcriptContainer.show();
+                orderPreview.hide();
+            } catch(e) {
+                Swal.fire('Error', 'Speech recognition not available: ' + e.message, 'error');
+            }
+        });
+    } catch(e) {
+        startListening.prop('disabled', true)
+            .removeClass('btn-danger')
+            .addClass('btn-secondary')
+            .html('<i class="fas fa-microphone-slash"></i>');
+        console.error("Speech recognition not supported", e);
+    }
+    
+    // Process order text with AI
+    function processOrderText(text) {
+        console.log(text, "texttexttext");
+        if (!text.trim()) return;
+        
+        // Show loading state
+        orderPreview.hide();
+        $('#submitOrder').html('<i class="fas fa-spinner fa-spin mr-1"></i> Processing...').prop('disabled', true);
+        
+        $.ajax({
+            url: "{% url 'inventory:ai_process_order' %}",
+            type: "POST",
+            data: JSON.stringify({order_text: text, preview: true}),
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    localStorage.setItem("order", JSON.stringify(response))
+                    // Update preview
+                    $('#previewMaterial').text(response.material.name);
+                    $('#previewQuantity').text(response.order.quantity);
+                    $('#previewUnit').text(response.material.unit_of_measurement);
+                    $('#previewPurpose').text(response.order.purpose || '-');
+                    orderPreview.show();
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = 'Failed to process order';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMsg = response.message || errorMsg;
+                } catch(e) {
+                    console.log(e);    
+                }
+                Swal.fire('Error', errorMsg, 'error');
+            },
+            complete: function() {
+                $('#submitOrder').html('<i class="fas fa-paper-plane mr-1"></i> Submit Order').prop('disabled', false);
+            }
+        });
+    }
+    
+    // Submit order
+    $('#submitOrder').click(function() {
+        // const text = orderText.val().trim();
+        // if (!text) {
+        //     Swal.fire('Error', 'Please speak or type your order first', 'error');
+        //     return;
+        // }
+        
+        // Show loading state
+        const submitBtn = $(this);
+        submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Submitting...').prop('disabled', true);
+
+        const orderData = localStorage.getItem("order");
+        
+        $.ajax({
+            url: "{% url 'inventory:ai_submit_order' %}",
+            type: "POST",
+            data: orderData,
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val()
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    let message = `Successfully ordered ${response.transaction.quantity} ${response.material.unit_of_measurement} of ${response.material.name}`;
+                    if (response.message.includes('Created new')) {
+                        message += " (New material created)";
+                    }
+                    
+                    Swal.fire({
+                        title: 'Order Placed!',
+                        text: message,
+                        icon: 'success'
+                    }).then(() => {
+                        // Reset form
+                        orderText.val('');
+                        orderPreview.hide();
+                        transcriptContainer.hide();
+                        aiOrderPanel.hide();
+                        // Refresh the table
+                        $('#dataTable').DataTable().ajax.reload();
+                    });
+                } else {
+                    Swal.fire('Error', response.message, 'error');
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = 'Failed to process order';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMsg = response.message || errorMsg;
+                } catch(e) {}
+                Swal.fire('Error', errorMsg, 'error');
+            },
+            complete: function() {
+                submitBtn.html('<i class="fas fa-paper-plane mr-1"></i> Submit Order')
+                    .prop('disabled', false);
+            }
+        });
+    });
+    
+    // Cancel button
+    $('#cancelOrder').click(function() {
+        orderText.val('');
+        orderPreview.hide();
+        transcriptContainer.hide();
+    });
+    
+    // Manual text processing
+    orderText.on('keyup', function(e) {
+        if (e.key === 'Enter') {
+            processOrderText($(this).val());
+        }
+    });
+});
+</script>
+{% endblock javascripts %}

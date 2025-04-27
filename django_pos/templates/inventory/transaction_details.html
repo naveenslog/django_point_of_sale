@@ -1,0 +1,76 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Transaction Details{% endblock title %}
+
+{% block heading %}Transaction Details{% endblock heading %}
+
+{% block content %}
+<!--Go back-->
+<div class="row ml-0 mb-3">
+    <a href="{% url 'inventory:transaction_list' %}">
+        <button type="button" class="btn btn-info font-weight-bold">
+            <i class="fas fa-long-arrow-alt-left mr-2"></i>
+            Go back
+        </button>
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Transaction #{{ transaction.id }}</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Date</th>
+                        <td>{{ transaction.date|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Material</th>
+                        <td>{{ transaction.material.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Transaction Type</th>
+                        <td>
+                            {% if transaction.transaction_type == 'order' %}
+                                <span class="badge badge-success">Order</span>
+                            {% else %}
+                                <span class="badge badge-danger">Usage</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Quantity</th>
+                        <td>{{ transaction.quantity }} {{ transaction.material.unit_of_measurement }}</td>
+                    </tr>
+                    <tr>
+                        <th>Worker</th>
+                        <td>
+                            {% if transaction.worker %}
+                                {{ transaction.worker.user.get_full_name }} ({{ transaction.worker.role }})
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Purpose</th>
+                        <td>{{ transaction.purpose|default:"-" }}</td>
+                    </tr>
+                </table>
+                
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-warning btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-edit"></i>
+                        </span>
+                        <span class="text">Edit Transaction</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -58,6 +58,13 @@
             <span>Sales</span></a>
     </li>
 
+    <!-- Nav Item - Inventory -->
+    <li class="{% if "inventory" in active_icon %} nav-item active {% else %} nav-item {% endif %}">
+        <a class="nav-link" href="{% url 'inventory:material_list' %}">
+            <i class="fas fa-fw fa-cart-plus"></i>
+            <span>Inventory</span></a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 

@@ -48,6 +48,7 @@ TENANT_APPS = [
     "products",
     "sales",
     "pos",
+    "inventory",
 ]
 
 INSTALLED_APPS = SHARED_APPS + TENANT_APPS
@@ -186,3 +187,6 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")

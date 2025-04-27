@@ -1,0 +1,85 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% block title %}Transactions{% endblock title %}
+
+{% block stylesheets %}
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+{% block heading %}Transaction History{% endblock heading %}
+
+{% block content %}
+<!--Create new transaction-->
+<div class="row ml-0 mb-3">
+    <a href="{% url 'inventory:transaction_add' %}">
+        <button type="button" class="btn btn-success font-weight-bold">
+            <i class="fas fa-plus mr-2"></i>
+            New Transaction
+        </button>
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">All Transactions</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Material</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Worker</th>
+                        <th>Purpose</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.date|date:"Y-m-d H:i" }}</td>
+                        <td>{{ transaction.material.name }}</td>
+                        <td>
+                            {% if transaction.transaction_type == 'order' %}
+                                <span class="badge badge-success">Order</span>
+                            {% else %}
+                                <span class="badge badge-danger">Usage</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ transaction.quantity }} {{ transaction.material.unit_of_measurement }}</td>
+                        <td>
+                            {% if transaction.worker %}
+                                {{ transaction.worker.user.get_full_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ transaction.purpose|default:"-"|truncatechars:20 }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'inventory:transaction_details' transaction.id %}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "order": [[0, "desc"]]
+        });
+    });
+</script>
+{% endblock javascripts %}

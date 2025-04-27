@@ -27,3 +27,6 @@ django-crum
 django-tenants
 psycopg2-binary
 gunicorn
+openai
+langchain
+langchain_community

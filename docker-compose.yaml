@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: pos_db
+      POSTGRES_USER: pos_user
+      POSTGRES_PASSWORD: pos_password
+    ports:
+      - "5432:5432"
+    networks:
+      - django_point_of_sale_pos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pos_user -d pos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: ./django_pos
+    volumes:
+      - ./django_pos:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=django_pos.settings
+      - POSTGRES_DB=pos_db
+      - POSTGRES_USER=pos_user
+      - POSTGRES_PASSWORD=pos_password
+      - DB_HOST=db
+    networks:
+      - django_point_of_sale_pos_network
+
+networks:
+  django_point_of_sale_pos_network:
+
+volumes:
+  postgres_data:
