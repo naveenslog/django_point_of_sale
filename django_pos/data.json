@@ -1,0 +1,259 @@
+[
+    {
+        "model": "products.category",
+        "pk": 1,
+        "fields": {
+            "created_date": "2025-04-23T10:32:18.294Z",
+            "updated_date": "2025-04-23T10:32:18.294Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "South Indian",
+            "description": "South Indian Food",
+            "status": "ACTIVE"
+        }
+    },
+    {
+        "model": "products.category",
+        "pk": 2,
+        "fields": {
+            "created_date": "2025-04-23T10:32:18.294Z",
+            "updated_date": "2025-04-23T10:32:18.294Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "North Indian",
+            "description": "North Indian dishes",
+            "status": "ACTIVE"
+        }
+    },
+    {
+        "model": "products.category",
+        "pk": 3,
+        "fields": {
+            "created_date": "2025-04-23T10:32:18.294Z",
+            "updated_date": "2025-04-23T10:32:18.294Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Biryani",
+            "description": "Biryani dishes",
+            "status": "ACTIVE"
+        }
+    },
+    {
+        "model": "products.category",
+        "pk": 4,
+        "fields": {
+            "created_date": "2025-04-23T10:32:18.294Z",
+            "updated_date": "2025-04-23T10:32:18.294Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Desserts",
+            "description": "Desserts dishes",
+            "status": "ACTIVE"
+        }
+    },
+    {
+        "model": "products.category",
+        "pk": 5,
+        "fields": {
+            "created_date": "2025-04-23T10:32:18.294Z",
+            "updated_date": "2025-04-23T10:32:18.294Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Drinks",
+            "description": "Drinks dishes",
+            "status": "ACTIVE"
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 1,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Dosa",
+            "description": "Dosa",
+            "image_url": null,
+            "status": "ACTIVE",
+            "category": 1,
+            "price": 100.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 2,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Butter Chicken",
+            "description": "Creamy tomato-based chicken curry.",
+            "image_url": "https://www.shemins.com/wp-content/uploads/2017/05/Shemins-Butter-Chicken-LR.jpg",
+            "status": "ACTIVE",
+            "category": 2,
+            "price": 200.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 3,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Chole Bhature",
+            "description": "Spicy chickpeas with deep-fried bread.",
+            "image_url": "https://i.ytimg.com/vi/csfIOfMnRGg/maxresdefault.jpg",
+            "status": "ACTIVE",
+            "category": 2,
+            "price": 456.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 4,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Palak Paneer",
+            "description": "Cottage cheese in spinach gravy.",
+            "image_url": "https://www.yummytummyaarthi.com/wp-content/uploads/2021/11/palak-paneer-1.jpg",
+            "status": "ACTIVE",
+            "category": 2,
+            "price": 234.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 5,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Rajma",
+            "description": "Kidney bean curry served with rice.",
+            "image_url": "https://www.archanaskitchen.com/images/archanaskitchen/0-Archanas-Kitchen-Recipes/2020/Punjabi_Rajma_Masala_Recipe_-_Rajma_Chawal_Spiced_Red_Kidney_Beans_Curry_4.jpg",
+            "status": "ACTIVE",
+            "category": 2,
+            "price": 345.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 6,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Hyderabadi Biryani",
+            "description": "Aromatic rice with marinated meat and saffron.",
+            "image_url": "https://static.wixstatic.com/media/c47167_4e575594ceab4c95b6d3ad001890c0c7~mv2.webp/v1/fill/w_568,h_378,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/c47167_4e575594ceab4c95b6d3ad001890c0c7~mv2.w",
+            "status": "ACTIVE",
+            "category": 3,
+            "price": 456.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 7,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Veg Biryani",
+            "description": "Spiced vegetable rice cooked with herbs.",
+            "image_url": "https://www.madhuseverydayindian.com/wp-content/uploads/2022/11/easy-vegetable-biryani.jpg",
+            "status": "ACTIVE",
+            "category": 3,
+            "price": 333.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 8,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Chicken Dum Biryani",
+            "description": "Slow-cooked chicken biryani with rich flavors.",
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRygEJDW1tXS4G9ljGMWylQmHvBuEIBACj2ng&s",
+            "status": "ACTIVE",
+            "category": 3,
+            "price": 234.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 9,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Gulab Jamun",
+            "description": "Fried milk balls soaked in sugar syrup.",
+            "image_url": "https://www.foodie-trail.com/wp-content/uploads/2020/04/PHOTO-2022-02-12-20-04-41_1.jpg",
+            "status": "ACTIVE",
+            "category": 3,
+            "price": 234.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 10,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Rasgulla",
+            "description": "Soft, spongy balls in light syrup.",
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSob3EerZuChoGLlNXmz5-YZSC4-W-fmFxXSA&s",
+            "status": "ACTIVE",
+            "category": 3,
+            "price": 345.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 11,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Kheer",
+            "description": "Rice pudding with cardamom and saffron.",
+            "image_url": "https://www.nestleprofessional.in/sites/default/files/2022-07/Rice-Kheer.jpg",
+            "status": "ACTIVE",
+            "category": 4,
+            "price": 346.0
+        }
+    },
+    {
+        "model": "products.product",
+        "pk": 12,
+        "fields": {
+            "created_date": "2025-04-24T04:35:54.520Z",
+            "updated_date": "2025-04-24T04:35:54.526Z",
+            "created_by": 6,
+            "updated_by": 6,
+            "name": "Masala Chai",
+            "description": "Spiced Indian tea.",
+            "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNxF6tvKlJCFR4gAuhac7s45byG3BoKtjlXA&s",
+            "status": "ACTIVE",
+            "category": 4,
+            "price": 314.0
+        }
+    }
+]

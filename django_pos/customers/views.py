@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import Customer
-
+from django.contrib.auth import login
+from tenant.models import TenantUser
 
 @login_required(login_url="/accounts/login/")
 def customers_list_view(request):
@@ -131,3 +132,72 @@ def customers_delete_view(request, customer_id):
             request, 'There was an error during the elimination!', extra_tags="danger")
         print(e)
         return redirect('customers:customers_list')
+
+from django.contrib.auth import login
+from django.contrib.auth.backends import ModelBackend  # Your custom backend (if you're using one)
+
+def quick_register_view(request):
+    context = {
+        "active_icon": "customers",
+    }
+
+    if request.method == 'POST':
+        data = request.POST
+
+        name = data['name'].strip()
+        phone = data['phone'].strip()
+        order_type = data['order_type']
+        address = data.get('address', '').strip()
+
+        # Create fake email
+        fake_email = name.lower().replace(" ", "") + phone + "@example.com"
+
+        attributes = {
+            "first_name": name,
+            "last_name": '',
+            "email": fake_email,
+            "phone": phone,
+            "address": address if order_type == 'home_delivery' else '',
+        }
+
+        # First check if customer exists
+        customer = Customer.objects.filter(phone=phone).first()
+
+        if customer:
+            # Customer exists -> Log them in
+            user = customer.user  # Assuming Customer has OneToOneField with User
+            if user:
+                # Specify the backend explicitly if you have multiple authentication backends
+                login(request, user, backend='tenant.backends.TenantAwareAuthenticationBackend')
+                messages.success(request, f'Welcome back, {name}!', extra_tags="success")
+                return redirect('product_list')
+            else:
+                messages.error(request, 'User account linked to customer not found.', extra_tags="danger")
+                return redirect('customers:quick_register')
+        
+        else:
+            # Customer doesn't exist -> Create customer and user
+            try:
+                user = TenantUser.objects.create_user(
+                    username=phone,
+                    email=fake_email,
+                    password=phone,
+                    tenant=request.tenant,
+                )
+
+                new_customer = Customer.objects.create(
+                    user=user,
+                    **attributes
+                )
+                new_customer.save()
+
+                # Specify the backend explicitly here too
+                login(request, user, backend='tenant.backends.TenantAwareAuthenticationBackend')
+                messages.success(request, f'Customer {name} registered and logged in successfully!', extra_tags="success")
+                return redirect('product_list')
+            except Exception as e:
+                messages.error(request, 'There was an error during registration!', extra_tags="danger")
+                print(e)
+                return redirect('customers:quick_register')
+
+    return render(request, "accounts/register.html", context=context)

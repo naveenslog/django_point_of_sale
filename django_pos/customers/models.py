@@ -1,5 +1,6 @@
 from django.db import models
 from common.models import AuditModel
+from tenant.models import TenantUser
 
 class Customer(AuditModel):
     first_name = models.CharField(max_length=256)
@@ -7,6 +8,7 @@ class Customer(AuditModel):
     address = models.TextField(max_length=256, blank=True, null=True)
     email = models.EmailField(max_length=256, blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
+    user = models.OneToOneField(TenantUser, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = 'Customers'

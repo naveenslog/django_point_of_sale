@@ -32,6 +32,7 @@ services:
       - POSTGRES_USER=pos_user
       - POSTGRES_PASSWORD=pos_password
       - DB_HOST=db
+      - OPENAI_API_KEY=TBD
     networks:
       - django_point_of_sale_pos_network
 

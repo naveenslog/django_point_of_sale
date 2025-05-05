@@ -1,11 +1,22 @@
 {% extends "pos/base.html" %}
 {% load static %}
-{% block title %}Raw Materials{% endblock title %}
+{% block title %}Inventory Management{% endblock title %}
 
 {% block stylesheets %}
 <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
+    /* Tab styling */
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        font-weight: 600;
+    }
+    
+    /* AI Order Component */
     .ai-order-container {
         position: fixed;
         bottom: 20px;
@@ -73,71 +84,188 @@
     .order-item strong {
         color: #4e73df;
     }
+    .badge-order {
+        background-color: #1cc88a;
+        color: white;
+    }
+    .badge-usage {
+        background-color: #e74a3b;
+    }
+    /* Voice Order Button */
+    #voiceOrderBtn.listening {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
 </style>
 {% endblock stylesheets %}
 
-{% block heading %}Raw Materials{% endblock heading %}
+{% block heading %}Inventory Management{% endblock heading %}
 
 {% block content %}
-<!--Create new material-->
-<div class="row ml-0 mb-3">
-    <a href="{% url 'inventory:material_add' %}">
-        <button type="button" class="btn btn-success font-weight-bold">
-            <i class="fas fa-plus mr-2"></i>
-            Add New Material
-        </button>
-    </a>
-</div>
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs mb-4" id="inventoryTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="true">
+            <i class="fas fa-clipboard-list mr-1"></i> Orders
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="inventory-tab" data-toggle="tab" href="#inventory" role="tab" aria-controls="inventory" aria-selected="false">
+            <i class="fas fa-boxes mr-1"></i> Inventory
+        </a>
+    </li>
+</ul>
 
-<!-- DataTable -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Materials List</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Unit</th>
-                        <th>Current Stock</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for material in materials %}
-                    <tr>
-                        <td>{{ material.name }}</td>
-                        <td>{{ material.description|default:"-"|truncatechars:50 }}</td>
-                        <td>{{ material.unit_of_measurement }}</td>
-                        <td>
-                            {% with inventory=material.inventory_set.first %}
-                                {% if inventory %}
-                                    {{ inventory.stock_quantity }} {{ material.unit_of_measurement }}
+<!-- Tab Content -->
+<div class="tab-content" id="inventoryTabsContent">
+    <!-- Orders Tab -->
+    <div class="tab-pane fade show active" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+        <div class="card shadow mb-4">
+            <!-- In the card-header div where refresh button is -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                <div>
+                    <button class="btn btn-sm btn-secondary mr-2" id="refreshOrders">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-primary" id="voiceOrderBtn">
+                        <i class="fas fa-microphone mr-1"></i> Voice Order
+                    </button>
+                </div>
+            </div>
+
+            <!-- Remove the entire ai-order-container div at the bottom -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Material</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Worker</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.date|date:"Y-m-d H:i" }}</td>
+                                <td>{{ transaction.material.name }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'order' %}
+                                        <span class="badge badge-order">Order</span>
+                                    {% else %}
+                                        <span class="badge badge-usage">Usage</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.quantity }} {{ transaction.material.unit_of_measurement }}</td>
+                                <td>
+                                    {% if transaction.worker %}
+                                        {{ transaction.worker.user.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.purpose|default:"-" }}</td>
+                                {% if transaction.status == "purchased" %}
+                                    <td>{{ transaction.status|default:"-" }}</td>
                                 {% else %}
-                                    0 {{ material.unit_of_measurement }}
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                        <td class="text-center">
-                            <a href="{% url 'inventory:material_details' material.id %}" class="text-decoration-none">
-                                <button type="button" class="btn btn-info btn-sm" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                    <form id="status-update-form" data-transaction-id="{{ transaction.id }}">
+                                        <td>
+                                            <select name="status" id="status-select">
+                                                <option value="approved" {% if transaction.status == "approved" %}selected{% endif %}>Approved</option> 
+                                                <option value="rejected" {% if transaction.status == "rejected" %}selected{% endif %}>Rejected</option> 
+                                                <option value="purchased" {% if transaction.status == "purchased" %}selected{% endif %}>Purchased</option> 
+                                            </select>
+                                        </td>
+                                    </form>
+                                {%endif%}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div class="tab-pane fade" id="inventory" role="tabpanel" aria-labelledby="inventory-tab">
+        <div class="row ml-0 mb-3">
+            <a href="{% url 'inventory:material_add' %}">
+                <button type="button" class="btn btn-success font-weight-bold">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add New Material
+                </button>
+            </a>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Current Inventory</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="inventoryTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Unit</th>
+                                <th>Current Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for material in materials %}
+                            <tr>
+                                <td>{{ material.name }}</td>
+                                <td>{{ material.description|default:"-"|truncatechars:50 }}</td>
+                                <td>{{ material.unit_of_measurement }}</td>
+                                <td>
+                                    {% with inventory=material.inventory %}
+                                        {% if inventory %}
+                                            {{ inventory.stock_quantity }} {{ material.unit_of_measurement }}
+                                        {% else %}
+                                            0 {{ material.unit_of_measurement }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    {% with inventory=material.inventory_set.first %}
+                                        {% if inventory and inventory.stock_quantity < 10 %}
+                                            <span class="badge badge-warning">Low Stock</span>
+                                        {% else %}
+                                            <span class="badge badge-success">In Stock</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'inventory:material_details' material.id %}" class="btn btn-info btn-sm" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- AI Order Floating Button -->
-<div class="ai-order-container">
+<!-- <div class="ai-order-container">
     <div class="ai-order-panel" id="aiOrderPanel">
         <div class="ai-order-header">
             <i class="fas fa-robot mr-2"></i>AI Order Assistant
@@ -189,7 +317,7 @@
     <button id="aiOrderButton" class="btn btn-primary ai-order-btn">
         <i class="fas fa-robot"></i>
     </button>
-</div>
+</div> -->
 {% endblock content %}
 
 {% block javascripts %}
@@ -200,86 +328,255 @@
 
 <script>
 $(document).ready(function() {
-    // Initialize DataTable
-    $('#dataTable').DataTable();
-    
-    // AI Order Panel Toggle
-    const aiOrderBtn = $('#aiOrderButton');
-    const aiOrderPanel = $('#aiOrderPanel');
-    
-    aiOrderBtn.click(function() {
-        aiOrderPanel.toggle();
+    // Initialize DataTables
+    const ordersTable = $('#ordersTable').DataTable({
+        order: [[0, 'desc']]
     });
     
-    // Close panel when clicking outside
-    $(document).mouseup(function(e) {
-        if (!aiOrderPanel.is(e.target) && aiOrderPanel.has(e.target).length === 0 && 
-            !aiOrderBtn.is(e.target) && aiOrderBtn.has(e.target).length === 0) {
-            aiOrderPanel.hide();
-        }
+    const inventoryTable = $('#inventoryTable').DataTable();
+    
+    // Refresh orders table
+    $('#refreshOrders').click(function() {
+        ordersTable.ajax.reload(null, false);
+        Swal.fire({
+            title: 'Refreshed!',
+            text: 'Orders list has been updated',
+            icon: 'success',
+            timer: 1000,
+            showConfirmButton: false
+        });
     });
+
+    // // AI Order Panel Toggle
+    // const aiOrderBtn = $('#aiOrderButton');
+    // const aiOrderPanel = $('#aiOrderPanel');
     
-    // Speech Recognition
-    const startListening = $('#startListening');
-    const orderText = $('#orderText');
-    const transcriptContainer = $('#transcriptContainer');
-    const orderPreview = $('#orderPreview');
+    // aiOrderBtn.click(function() {
+    //     aiOrderPanel.toggle();
+    // });
     
+    // // Close panel when clicking outside
+    // $(document).mouseup(function(e) {
+    //     if (!aiOrderPanel.is(e.target) && aiOrderPanel.has(e.target).length === 0 && 
+    //         !aiOrderBtn.is(e.target) && aiOrderBtn.has(e.target).length === 0) {
+    //         aiOrderPanel.hide();
+    //     }
+    // });
+    
+    // // Speech Recognition
+    // const startListening = $('#startListening');
+    // const orderText = $('#orderText');
+    // const transcriptContainer = $('#transcriptContainer');
+    // const orderPreview = $('#orderPreview');
+    
+    // let recognition;
+    // try {
+    //     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    //     recognition = new SpeechRecognition();
+    //     recognition.continuous = false;
+    //     recognition.interimResults = true;
+    //     recognition.lang = 'en-US';
+        
+    //     recognition.onstart = function() {
+    //         startListening.addClass('listening');
+    //         orderText.val('Listening...');
+    //     };
+        
+    //     recognition.onresult = function(event) {
+    //         const transcript = Array.from(event.results)
+    //             .map(result => result[0])
+    //             .map(result => result.transcript)
+    //             .join('');
+            
+    //         orderText.val(transcript);
+    //         transcriptContainer.show();
+    //     };
+        
+    //     recognition.onerror = function(event) {
+    //         Swal.fire('Error', `Speech recognition error: ${event.error}`, 'error');
+    //         startListening.removeClass('listening');
+    //     };
+        
+    //     recognition.onend = function() {
+    //         startListening.removeClass('listening');
+    //         if (orderText.val().trim() && orderText.val() !== 'Listening...') {
+    //             processOrderText(orderText.val());
+    //         }
+    //     };
+        
+    //     startListening.click(function() {
+    //         try {
+    //             recognition.start();
+    //             transcriptContainer.show();
+    //             orderPreview.hide();
+    //         } catch(e) {
+    //             Swal.fire('Error', 'Speech recognition not available: ' + e.message, 'error');
+    //         }
+    //     });
+    const voiceOrderBtn = $('#voiceOrderBtn');
     let recognition;
+    
     try {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         recognition.continuous = false;
-        recognition.interimResults = true;
+        recognition.interimResults = false;
         recognition.lang = 'en-US';
         
         recognition.onstart = function() {
-            startListening.addClass('listening');
-            orderText.val('Listening...');
+            voiceOrderBtn.html('<i class="fas fa-microphone-slash mr-1"></i> Listening...')
+                .removeClass('btn-primary')
+                .addClass('btn-danger');
         };
         
         recognition.onresult = function(event) {
-            const transcript = Array.from(event.results)
-                .map(result => result[0])
-                .map(result => result.transcript)
-                .join('');
-            
-            orderText.val(transcript);
-            transcriptContainer.show();
+            const transcript = event.results[0][0].transcript;
+            processVoiceOrder(transcript);
         };
         
         recognition.onerror = function(event) {
-            Swal.fire('Error', `Speech recognition error: ${event.error}`, 'error');
-            startListening.removeClass('listening');
+            console.error('Speech recognition error', event.error);
+            resetVoiceButton();
+            Swal.fire('Error', 'Voice recognition failed. Please try again.', 'error');
         };
         
         recognition.onend = function() {
-            startListening.removeClass('listening');
-            if (orderText.val().trim() && orderText.val() !== 'Listening...') {
-                processOrderText(orderText.val());
-            }
+            resetVoiceButton();
         };
         
-        startListening.click(function() {
+        voiceOrderBtn.click(function() {
             try {
                 recognition.start();
-                transcriptContainer.show();
-                orderPreview.hide();
             } catch(e) {
-                Swal.fire('Error', 'Speech recognition not available: ' + e.message, 'error');
+                Swal.fire('Error', 'Voice recognition not available: ' + e.message, 'error');
+                voiceOrderBtn.prop('disabled', true)
+                    .removeClass('btn-primary')
+                    .addClass('btn-secondary')
+                    .html('<i class="fas fa-microphone-slash mr-1"></i> Unavailable');
             }
         });
+        
+        function resetVoiceButton() {
+            voiceOrderBtn.html('<i class="fas fa-microphone mr-1"></i> Voice Order')
+                .removeClass('btn-danger')
+                .addClass('btn-primary');
+        }
+        
+        function processVoiceOrder(orderText) {
+            if (!orderText.trim()) return;
+            
+            Swal.fire({
+                title: 'Processing your order...',
+                html: 'Please wait while we process: <b>' + orderText + '</b>',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            $.ajax({
+                url: "{% url 'inventory:ai_process_order' %}",
+                type: "POST",
+                data: JSON.stringify({order_text: orderText, preview: false}),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showOrderConfirmation(response);
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Failed to process order';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMsg = response.message || errorMsg;
+                    } catch(e) {
+                        console.log(e);    
+                    }
+                    Swal.fire('Error', errorMsg, 'error');
+                }
+            });
+        }
+        
+        function showOrderConfirmation(orderData) {
+            const material = orderData.material;
+            const order = orderData.order;
+            
+            Swal.fire({
+                title: 'Confirm Your Order',
+                html: `
+                    <div class="text-left">
+                        <p><strong>Material:</strong> ${material.name}</p>
+                        <p><strong>Quantity:</strong> ${order.quantity} ${material.unit_of_measurement}</p>
+                        <p><strong>Purpose:</strong> ${order.purpose || 'Not specified'}</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Submit Order',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                focusConfirm: false,
+                preConfirm: () => {
+                    return submitOrder(orderData);
+                }
+            });
+        }
+        
+        function submitOrder(orderData) {
+            return $.ajax({
+                url: "{% url 'inventory:ai_submit_order' %}",
+                type: "POST",
+                data: JSON.stringify(orderData),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val()
+                }
+            }).then(response => {
+                if (response.status === 'success') {
+                    let message = `Successfully ordered ${response.transaction.quantity} ${response.material.unit_of_measurement} of ${response.material.name}`;
+                    if (response.message.includes('Created new')) {
+                        message += " (New material created)";
+                    }
+                    
+                    Swal.fire({
+                        title: 'Order Placed!',
+                        text: message,
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                    
+                    return true;
+                } else {
+                    Swal.showValidationMessage(response.message);
+                    return false;
+                }
+            }).catch(xhr => {
+                let errorMsg = 'Failed to submit order';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMsg = response.message || errorMsg;
+                } catch(e) {}
+                Swal.showValidationMessage(errorMsg);
+                return false;
+            });
+        }
+        
     } catch(e) {
-        startListening.prop('disabled', true)
-            .removeClass('btn-danger')
+        voiceOrderBtn.prop('disabled', true)
+            .removeClass('btn-primary')
             .addClass('btn-secondary')
-            .html('<i class="fas fa-microphone-slash"></i>');
+            .html('<i class="fas fa-microphone-slash mr-1"></i> Unavailable');
         console.error("Speech recognition not supported", e);
     }
     
     // Process order text with AI
     function processOrderText(text) {
-        console.log(text, "texttexttext");
         if (!text.trim()) return;
         
         // Show loading state
@@ -296,7 +593,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status === 'success') {
-                    localStorage.setItem("order", JSON.stringify(response))
+                    localStorage.setItem("order", JSON.stringify(response));
                     // Update preview
                     $('#previewMaterial').text(response.material.name);
                     $('#previewQuantity').text(response.order.quantity);
@@ -325,18 +622,16 @@ $(document).ready(function() {
     
     // Submit order
     $('#submitOrder').click(function() {
-        // const text = orderText.val().trim();
-        // if (!text) {
-        //     Swal.fire('Error', 'Please speak or type your order first', 'error');
-        //     return;
-        // }
+        const orderData = localStorage.getItem("order");
+        if (!orderData) {
+            Swal.fire('Error', 'No order data found. Please try again.', 'error');
+            return;
+        }
         
         // Show loading state
         const submitBtn = $(this);
         submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Submitting...').prop('disabled', true);
 
-        const orderData = localStorage.getItem("order");
-        
         $.ajax({
             url: "{% url 'inventory:ai_submit_order' %}",
             type: "POST",
@@ -357,13 +652,11 @@ $(document).ready(function() {
                         text: message,
                         icon: 'success'
                     }).then(() => {
-                        // Reset form
                         orderText.val('');
                         orderPreview.hide();
                         transcriptContainer.hide();
                         aiOrderPanel.hide();
-                        // Refresh the table
-                        $('#dataTable').DataTable().ajax.reload();
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire('Error', response.message, 'error');
@@ -398,5 +691,52 @@ $(document).ready(function() {
         }
     });
 });
+
+const orderChangeForm = document.getElementById('status-select')
+if(orderChangeForm){
+    orderChangeForm.addEventListener('change', async function() {
+    const form = document.getElementById('status-update-form');
+    const transactionId = form.dataset.transactionId;
+    const selectedStatus = this.value;
+
+    // const transactionId = this.dataset.transactionId;
+    // const selectedStatus = document.getElementById('status-select').value;
+
+    const response = await fetch(`/inventory/update-transaction-status/${transactionId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),  // Fetch CSRF token from cookies
+        },
+        body: JSON.stringify({
+            status: selectedStatus
+        })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        alert('Status updated successfully!');
+        location.reload();  // Reload the page to see updated status
+    } else {
+        alert('Error updating status: ' + data.message);
+    }
+});
+
+// CSRF Token helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+}
 </script>
 {% endblock javascripts %}

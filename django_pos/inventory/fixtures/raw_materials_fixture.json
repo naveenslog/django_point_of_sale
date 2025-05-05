@@ -1,0 +1,902 @@
+[
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 1,
+        "fields": {
+            "name": "Rice",
+            "description": "Staple food grain",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 2,
+        "fields": {
+            "name": "Wheat Flour",
+            "description": "Used for bread and pasta",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 3,
+        "fields": {
+            "name": "Sugar",
+            "description": "Sweetener",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 4,
+        "fields": {
+            "name": "Salt",
+            "description": "Flavor enhancer",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 5,
+        "fields": {
+            "name": "Milk",
+            "description": "Dairy product",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 6,
+        "fields": {
+            "name": "Butter",
+            "description": "Used in cooking and baking",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 7,
+        "fields": {
+            "name": "Cheese",
+            "description": "Dairy product made from milk",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 8,
+        "fields": {
+            "name": "Chicken",
+            "description": "Common poultry meat",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 9,
+        "fields": {
+            "name": "Beef",
+            "description": "Meat from cattle",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 10,
+        "fields": {
+            "name": "Pork",
+            "description": "Meat from pigs",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 11,
+        "fields": {
+            "name": "Eggs",
+            "description": "Poultry eggs",
+            "unit_of_measurement": "dozen"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 12,
+        "fields": {
+            "name": "Olive Oil",
+            "description": "Oil from olives",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 13,
+        "fields": {
+            "name": "Vegetable Oil",
+            "description": "General cooking oil",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 14,
+        "fields": {
+            "name": "Tomatoes",
+            "description": "Common vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 15,
+        "fields": {
+            "name": "Onions",
+            "description": "Used in many dishes",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 16,
+        "fields": {
+            "name": "Garlic",
+            "description": "Flavor booster",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 17,
+        "fields": {
+            "name": "Potatoes",
+            "description": "Versatile root vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 18,
+        "fields": {
+            "name": "Carrots",
+            "description": "Orange root vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 19,
+        "fields": {
+            "name": "Peas",
+            "description": "Small green vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 20,
+        "fields": {
+            "name": "Green Beans",
+            "description": "Common vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 21,
+        "fields": {
+            "name": "Cabbage",
+            "description": "Leafy green vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 22,
+        "fields": {
+            "name": "Spinach",
+            "description": "Leafy vegetable rich in iron",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 23,
+        "fields": {
+            "name": "Broccoli",
+            "description": "Cruciferous vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 24,
+        "fields": {
+            "name": "Cauliflower",
+            "description": "White cruciferous vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 25,
+        "fields": {
+            "name": "Bell Peppers",
+            "description": "Colorful vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 26,
+        "fields": {
+            "name": "Cucumber",
+            "description": "Cool vegetable",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 27,
+        "fields": {
+            "name": "Lettuce",
+            "description": "Salad green",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 28,
+        "fields": {
+            "name": "Mushrooms",
+            "description": "Edible fungi",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 29,
+        "fields": {
+            "name": "Zucchini",
+            "description": "Summer squash",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 30,
+        "fields": {
+            "name": "Ginger",
+            "description": "Spice and medicinal root",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 31,
+        "fields": {
+            "name": "Turmeric",
+            "description": "Yellow spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 32,
+        "fields": {
+            "name": "Coriander",
+            "description": "Herb and spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 33,
+        "fields": {
+            "name": "Cumin",
+            "description": "Common spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 34,
+        "fields": {
+            "name": "Black Pepper",
+            "description": "Essential spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 35,
+        "fields": {
+            "name": "Red Chili Powder",
+            "description": "Spicy powder",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 36,
+        "fields": {
+            "name": "Paprika",
+            "description": "Mild spice powder",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 37,
+        "fields": {
+            "name": "Oregano",
+            "description": "Herb used in Italian cuisine",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 38,
+        "fields": {
+            "name": "Thyme",
+            "description": "Fragrant herb",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 39,
+        "fields": {
+            "name": "Rosemary",
+            "description": "Woody herb",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 40,
+        "fields": {
+            "name": "Basil",
+            "description": "Sweet herb",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 41,
+        "fields": {
+            "name": "Bay Leaves",
+            "description": "Flavoring leaves",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 42,
+        "fields": {
+            "name": "Mustard Seeds",
+            "description": "Seeds used in cooking",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 43,
+        "fields": {
+            "name": "Fenugreek",
+            "description": "Spice and herb",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 44,
+        "fields": {
+            "name": "Cloves",
+            "description": "Strong spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 45,
+        "fields": {
+            "name": "Cinnamon",
+            "description": "Sweet spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 46,
+        "fields": {
+            "name": "Nutmeg",
+            "description": "Spice used in baking",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 47,
+        "fields": {
+            "name": "Cardamom",
+            "description": "Sweet and aromatic spice",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 48,
+        "fields": {
+            "name": "Vanilla Extract",
+            "description": "Flavoring agent",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 49,
+        "fields": {
+            "name": "Baking Soda",
+            "description": "Leavening agent",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 50,
+        "fields": {
+            "name": "Baking Powder",
+            "description": "Leavening agent for baking",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 51,
+        "fields": {
+            "name": "Yeast",
+            "description": "Fermentation agent",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 52,
+        "fields": {
+            "name": "Honey",
+            "description": "Natural sweetener",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 53,
+        "fields": {
+            "name": "Maple Syrup",
+            "description": "Natural syrup",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 54,
+        "fields": {
+            "name": "Coconut Milk",
+            "description": "Milk extracted from coconut",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 55,
+        "fields": {
+            "name": "Almonds",
+            "description": "Edible nuts",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 56,
+        "fields": {
+            "name": "Cashews",
+            "description": "Edible nuts",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 57,
+        "fields": {
+            "name": "Walnuts",
+            "description": "Edible nuts",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 58,
+        "fields": {
+            "name": "Peanuts",
+            "description": "Groundnuts used in cooking",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 59,
+        "fields": {
+            "name": "Raisins",
+            "description": "Dried grapes",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 60,
+        "fields": {
+            "name": "Dates",
+            "description": "Sweet dried fruits",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 61,
+        "fields": {
+            "name": "Apples",
+            "description": "Popular fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 62,
+        "fields": {
+            "name": "Bananas",
+            "description": "Tropical fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 63,
+        "fields": {
+            "name": "Oranges",
+            "description": "Citrus fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 64,
+        "fields": {
+            "name": "Lemons",
+            "description": "Sour citrus fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 65,
+        "fields": {
+            "name": "Limes",
+            "description": "Green citrus fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 66,
+        "fields": {
+            "name": "Strawberries",
+            "description": "Berry fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 67,
+        "fields": {
+            "name": "Blueberries",
+            "description": "Berry fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 68,
+        "fields": {
+            "name": "Pineapple",
+            "description": "Tropical fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 69,
+        "fields": {
+            "name": "Mangoes",
+            "description": "Sweet tropical fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 70,
+        "fields": {
+            "name": "Grapes",
+            "description": "Small fruit, used in wine",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 71,
+        "fields": {
+            "name": "Avocado",
+            "description": "Creamy fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 72,
+        "fields": {
+            "name": "Coconut",
+            "description": "Tropical fruit",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 73,
+        "fields": {
+            "name": "Fish",
+            "description": "Common seafood",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 74,
+        "fields": {
+            "name": "Shrimp",
+            "description": "Small seafood",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 75,
+        "fields": {
+            "name": "Crab",
+            "description": "Seafood delicacy",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 76,
+        "fields": {
+            "name": "Lobster",
+            "description": "Luxury seafood",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 77,
+        "fields": {
+            "name": "Tofu",
+            "description": "Soybean curd",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 78,
+        "fields": {
+            "name": "Soy Sauce",
+            "description": "Fermented soy condiment",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 79,
+        "fields": {
+            "name": "Vinegar",
+            "description": "Fermented acidic liquid",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 80,
+        "fields": {
+            "name": "Ketchup",
+            "description": "Tomato-based sauce",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 81,
+        "fields": {
+            "name": "Mayonnaise",
+            "description": "Creamy condiment",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 82,
+        "fields": {
+            "name": "Mustard",
+            "description": "Spicy condiment",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 83,
+        "fields": {
+            "name": "Barbecue Sauce",
+            "description": "Flavorful sauce",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 84,
+        "fields": {
+            "name": "Chili Sauce",
+            "description": "Spicy sauce",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 85,
+        "fields": {
+            "name": "Pasta",
+            "description": "Italian staple",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 86,
+        "fields": {
+            "name": "Noodles",
+            "description": "Staple in Asian cuisine",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 87,
+        "fields": {
+            "name": "Corn",
+            "description": "Cereal grain",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 88,
+        "fields": {
+            "name": "Oats",
+            "description": "Whole grain",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 89,
+        "fields": {
+            "name": "Barley",
+            "description": "Cereal grain",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 90,
+        "fields": {
+            "name": "Quinoa",
+            "description": "Pseudo-cereal grain",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 91,
+        "fields": {
+            "name": "Chickpeas",
+            "description": "Legume",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 92,
+        "fields": {
+            "name": "Lentils",
+            "description": "Lens-shaped legumes",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 93,
+        "fields": {
+            "name": "Kidney Beans",
+            "description": "Common bean variety",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 94,
+        "fields": {
+            "name": "Black Beans",
+            "description": "Black legume",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 95,
+        "fields": {
+            "name": "Green Gram",
+            "description": "Mung beans",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 96,
+        "fields": {
+            "name": "Split Peas",
+            "description": "Dried, peeled peas",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 97,
+        "fields": {
+            "name": "Cottage Cheese",
+            "description": "Fresh cheese curds",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 98,
+        "fields": {
+            "name": "Yogurt",
+            "description": "Fermented milk product",
+            "unit_of_measurement": "kg"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 99,
+        "fields": {
+            "name": "Ice Cream",
+            "description": "Frozen dessert",
+            "unit_of_measurement": "liters"
+        }
+    },
+    {
+        "model": "inventory.rawmaterial",
+        "pk": 100,
+        "fields": {
+            "name": "Chocolate",
+            "description": "Sweet confection",
+            "unit_of_measurement": "kg"
+        }
+    }
+]

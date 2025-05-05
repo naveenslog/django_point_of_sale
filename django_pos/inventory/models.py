@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from decimal import Decimal
 
 # Worker model to represent a restaurant employee
 class Worker(models.Model):
@@ -33,11 +33,17 @@ class Ledger(models.Model):
         ('order', 'Order'),
         ('usage', 'Usage'),
     ]
+    STATUS_CHOICES = [
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('purchased', 'Purchsed'),
+    ]
 
     worker = models.ForeignKey(Worker, on_delete=models.SET_NULL, null=True)
     material = models.ForeignKey(RawMaterial, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)  # Quantity ordered or used
     transaction_type = models.CharField(max_length=6, choices=TRANSACTION_TYPES)  # 'order' or 'usage'
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)  # 'order' or 'usage'
     date = models.DateTimeField(auto_now_add=True)  # Date of the transaction
     purpose = models.CharField(max_length=255, blank=True, null=True)  # Purpose for usage (optional)
 
@@ -45,17 +51,19 @@ class Ledger(models.Model):
         return f'{self.transaction_type.capitalize()} - {self.material.name} ({self.quantity}) by {self.worker}'
 
     def save(self, *args, **kwargs):
+        print(self.status, args, kwargs)
         if self.transaction_type == 'usage':
             # Reduce inventory when using materials
             inventory = Inventory.objects.get(material=self.material)
             inventory.stock_quantity -= self.quantity
             inventory.save()
-        elif self.transaction_type == 'order':
+        elif self.status == 'purchased':
             # Increase inventory when ordering materials
 
             print(self.quantity, "self.quantityself.quantityself.quantityself.quantityself.quantity")
+
             inventory, created = Inventory.objects.get_or_create(material=self.material)
-            inventory.stock_quantity += self.quantity
+            inventory.stock_quantity += Decimal(self.quantity)
             inventory.save()
 
         super().save(*args, **kwargs)

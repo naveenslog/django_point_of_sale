@@ -3,19 +3,21 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from django.db.models import Sum
 from inventory.models import RawMaterial, Inventory, Ledger, Worker
 from inventory.forms import RawMaterialForm, TransactionForm
-from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from inventory.services import create_material_and_order
-from langchain.agents import initialize_agent
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from inventory.tools import MaterialOrderTool
 from django.views.decorators.http import require_POST
 from django.conf import settings
+
+from langchain.chat_models import ChatOpenAI
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import ChatPromptTemplate
+from inventory.services import create_material_and_order
+from pydantic import BaseModel, Field
+from typing import Optional
 
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
@@ -28,6 +30,20 @@ def material_list_view(request):
         "materials": materials,
     }
     return render(request, "inventory/material_list.html", context=context)
+
+@login_required
+def material_list(request):
+    materials = RawMaterial.objects.all()
+    transactions = Ledger.objects.select_related('material', 'worker').order_by('-date')
+    
+    context = {
+        "active_icon": "inventory",
+        "materials": materials,
+        "transactions": transactions,
+    }
+
+    return render(request, "inventory/material_list.html", context=context)
+
 
 @login_required
 def material_add_view(request):
@@ -142,7 +158,6 @@ def transaction_details_view(request, transaction_id):
     }
     return render(request, "inventory/transaction_details.html", context=context)
 
-# AJAX view to get materials for select2
 @login_required
 def get_materials(request):
     if is_ajax(request):
@@ -163,7 +178,7 @@ def get_materials(request):
     
     return JsonResponse({'error': 'Not Ajax request'}, status=400)
 
-@csrf_exempt  # Only if this is an API endpoint, remove if you have proper CSRF handling
+@csrf_exempt
 @require_http_methods(["POST"])
 def api_create_material_and_order(request):
     try:
@@ -181,21 +196,7 @@ def api_create_material_and_order(request):
             "message": "Invalid JSON data"
         }, status=400)
 
-# inventory/views.py
-import json
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from django.conf import settings
-from langchain.chat_models import ChatOpenAI
-from langchain.output_parsers import PydanticOutputParser
-from langchain.prompts import ChatPromptTemplate
-from inventory.services import create_material_and_order
-from pydantic import BaseModel, Field
-from typing import Optional
 
-
-# Step 1: Define expected schema
 class OrderSchema(BaseModel):
     material_name: str = Field(..., description="The name of the raw material")
     description: Optional[str] = Field(None, description="A short description of the material")
@@ -206,63 +207,67 @@ class OrderSchema(BaseModel):
     )
     purpose: Optional[str] = Field(None, description="The purpose of this order")
 
-# Step 2: Create the parser
-parser = PydanticOutputParser(pydantic_object=OrderSchema)
-
-# Step 3: Create the prompt template
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You're a helpful assistant that extracts structured data from raw order instructions."),
-    ("human", "Extract details from this order text: {order_text}\n{format_instructions}")
-])
-
 
 @require_POST
 @csrf_exempt
 def ai_process_order(request):
-    # try:
-        data = json.loads(request.body)
-        order_text = data.get('order_text', '').strip()
+    parser = PydanticOutputParser(pydantic_object=OrderSchema)
+    raw_materials_list = list(RawMaterial.objects.all().values_list("name", flat=True))
+
+    units_of_measurement = ["kg", "g", "liters", "ml", "pieces", "boxes", "units"]
+
+    materials_string = ", ".join(raw_materials_list)
+    units_string = ", ".join(units_of_measurement)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", 
+        f"""You're a helpful assistant that extracts structured data from raw food order instructions.
         
-        if not order_text:
-            return JsonResponse({'status': 'error', 'message': 'No order text provided'})
+        Follow these STRICT rules:
+        1. **Material Name** must exactly match one of these predefined materials: {materials_string}.
+        2. **Unit of Measurement** must exactly match one of these options: {units_string}.
+        3. Do not create new materials or units.
+        4. If quantity is missing, assume it is 1.
+        5. If purpose is missing, leave it empty.
 
-        # Step 4: Initialize LLM
-        llm = ChatOpenAI(
-            openai_api_key=settings.OPENAI_API_KEY,
-            model="gpt-3.5-turbo",
-            temperature=0
-        )
+        Format the output as instructed.
 
-        # Step 5: Format the prompt and get response
-        formatted_prompt = prompt.format_messages(
-            order_text=order_text,
-            format_instructions=parser.get_format_instructions()
-        )
-        llm_response = llm(formatted_prompt)
+        """
+        ),
+        ("human", "Extract details from this order text: {order_text}\n{format_instructions}")
+    ])
+    data = json.loads(request.body)
+    order_text = data.get('order_text', '').strip()
+    
+    if not order_text:
+        return JsonResponse({'status': 'error', 'message': 'No order text provided'})
 
-        # Step 6: Parse LLM response to extract structured data
-        parsed_data = parser.parse(llm_response.content)
-
-        print(parsed_data, "parsed_dataparsed_dataparsed_dataparsed_dataparsed_data")
-
-        # Step 7: Prepare data for material/order service
-        service_data = {
-            "material": {
-                "name": parsed_data.material_name,
-                "description": parsed_data.description or '',
-                "unit_of_measurement": parsed_data.unit_of_measurement
-            },
-            "order": {
-                "quantity": parsed_data.quantity,
-                'worker_id': request.user.id,
-                "purpose": parsed_data.purpose or 'AI Voice Order'
-            },
-            "status": "success"
-        }
-        print(service_data, "service_dataservice_dataservice_dataservice_data")
-        # Step 8: Call the service function
-        # result = create_material_and_order(service_data)
-        return JsonResponse(service_data)
+    llm = ChatOpenAI(
+        openai_api_key=settings.OPENAI_API_KEY,
+        model="gpt-3.5-turbo",
+        temperature=0
+    )
+    formatted_prompt = prompt.format_messages(
+        order_text=order_text,
+        format_instructions=parser.get_format_instructions()
+    )
+    llm_response = llm(formatted_prompt)
+    parsed_data = parser.parse(llm_response.content)
+    service_data = {
+        "material": {
+            "name": parsed_data.material_name,
+            "description": parsed_data.description or '',
+            "unit_of_measurement": parsed_data.unit_of_measurement
+        },
+        "order": {
+            "quantity": parsed_data.quantity,
+            'worker_id': request.user.id,
+            "purpose": parsed_data.purpose or 'AI Voice Order'
+        },
+        "status": "success"
+    }
+    print(service_data, "service_dataservice_dataservice_dataservice_data")
+    return JsonResponse(service_data)
 
 @require_POST
 @csrf_exempt
@@ -270,3 +275,24 @@ def ai_submit_order(request):
     data = json.loads(request.body)
     result = create_material_and_order(data)
     return JsonResponse(result)
+
+@login_required
+@require_POST
+@csrf_exempt  # Optional if CSRF is handled via JavaScript
+def update_transaction_status(request, transaction_id):
+    try:
+        transaction = Ledger.objects.get(id=transaction_id)
+        data = json.loads(request.body)
+        new_status = data.get('status')
+
+        if new_status not in dict(Ledger.STATUS_CHOICES):
+            return JsonResponse({'status': 'error', 'message': 'Invalid status'}, status=400)
+
+        transaction.status = new_status
+        transaction.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Transaction status updated successfully'})
+    except Ledger.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Transaction not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

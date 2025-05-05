@@ -1,0 +1,285 @@
+
+{% block stylesheets %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #f8f9fc;
+        --accent-color: #2e59d9;
+        --text-color: #5a5c69;
+        --border-radius: 0.35rem;
+    }
+    
+    body {
+        background-color: #f8f9fc;
+        text-align: center;
+    }
+
+    input, textarea {
+        width: 100% !important;
+    }
+    
+    .registration-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .registration-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1.25rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.25rem;
+        border-bottom: none;
+    }
+    
+    .card-body {
+        padding: 2rem;
+        background-color: white;
+    }
+    
+    .logo {
+        width: 180px;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+    
+    .form-control {
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d3e2;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    label {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        width: 100%;
+        border-radius: var(--border-radius);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        transform: translateY(-1px);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    .order-type-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--secondary-color);
+        border-radius: var(--border-radius);
+        padding: 0.25rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-type-btn {
+        flex: 1;
+        padding: 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        border-radius: calc(var(--border-radius) - 0.1rem);
+        font-weight: 600;
+        transition: all 0.3s;
+        color: var(--text-color);
+        background-color: transparent;
+        border: none;
+    }
+    
+    .order-type-btn.active {
+        background-color: white;
+        color: var(--primary-color);
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .hidden-field {
+        height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: all 0.4s ease-out;
+    }
+    
+    .visible-field {
+        height: auto;
+        opacity: 1;
+        margin-top: 1rem;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 576px) {
+        .registration-container {
+            margin: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block heading %}{% endblock heading %}
+
+{% block content %}
+<div class="registration-container">
+    <div class="card registration-card">
+        <div class="card-body text-center">
+            <!-- Logo -->
+            <img src="https://cognifydigital.in/wp-content/uploads/2024/12/cognify.png.webp" alt="Brand Logo" class="logo">
+
+            <!-- Registration Form -->
+            <form action="{% url 'customers:quick_register' %}" method="post" id="registrationForm">
+                {% csrf_token %}
+                
+                <!-- Phone -->
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" name="phone" id="phone" class="form-control" placeholder="999999999" required>
+                </div>
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" name="name" id="name" class="form-control" 
+                           placeholder="John Doe" required>
+                </div>
+
+                <!-- Order Type Toggle -->
+                <div class="form-group">
+                    <label>Order Type</label>
+                    <div class="order-type-toggle">
+                        <button type="button" class="order-type-btn active" data-value="dine_in">Dine In</button>
+                        <button type="button" class="order-type-btn" data-value="home_delivery">Home Delivery</button>
+                        <input type="hidden" name="order_type" id="orderType" value="dine_in">
+                    </div>
+                </div>
+
+                <!-- Address (hidden initially) -->
+                <div class="form-group hidden-field" id="addressField">
+                    <label for="address">Delivery Address</label>
+                    <textarea name="address" id="address" class="form-control" 
+                              placeholder="Enter your complete delivery address" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3" style="color: white;">
+                    <i class="fas fa-user-plus mr-2"></i> Order Now
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Order type toggle buttons
+        const orderTypeBtns = document.querySelectorAll('.order-type-btn');
+        const orderTypeInput = document.getElementById('orderType');
+        const addressField = document.getElementById('addressField');
+        
+        orderTypeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                orderTypeBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update hidden input value
+                const selectedValue = this.getAttribute('data-value');
+                orderTypeInput.value = selectedValue;
+                
+                // Toggle address field
+                if (selectedValue === 'home_delivery') {
+                    addressField.classList.remove('hidden-field');
+                    addressField.classList.add('visible-field');
+                } else {
+                    addressField.classList.remove('visible-field');
+                    addressField.classList.add('hidden-field');
+                }
+            });
+        });
+        
+        // Phone number formatting
+        const phoneInput = document.getElementById('phone');
+        // phoneInput.addEventListener('input', function(e) {
+        //     let value = this.value.replace(/\D/g, '');
+        //     if (value.length > 0) {
+        //         value = '+' + value;
+        //         if (value.length > 3) {
+        //             value = value.substring(0, 3) + ' ' + value.substring(3);
+        //         }
+        //         if (value.length > 7) {
+        //             value = value.substring(0, 7) + ' ' + value.substring(7);
+        //         }
+        //         if (value.length > 11) {
+        //             value = value.substring(0, 11) + ' ' + value.substring(11);
+        //         }
+        //     }
+        //     this.value = value;
+        // });
+        
+        // Form submission handler
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            // You can add additional validation here if needed
+            const phone = this.phone.value.trim();
+            const name = this.name.value.trim();
+            
+            if (phone && name) {
+                // Create a temporary email if needed
+                const fakeEmail = name.toLowerCase().replace(/\s+/g, '') + 
+                                 phone.replace(/\D/g, '') + "@example.com";
+                
+                // Check if hidden email input already exists
+                let emailInput = this.querySelector('input[name="email"]');
+                if (!emailInput) {
+                    emailInput = document.createElement('input');
+                    emailInput.type = 'hidden';
+                    emailInput.name = 'email';
+                    this.appendChild(emailInput);
+                }
+                emailInput.value = fakeEmail;
+            }
+        });
+    });
+</script>
+{% endblock javascripts %}

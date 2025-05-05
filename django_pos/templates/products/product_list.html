@@ -2,186 +2,486 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order Food | Our Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger King Menu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --bk-red: #e4002b;
+            --bk-dark: #502314;
+            --bk-yellow: #ffbc0d;
+            --bk-light: #f5ebdc;
+        }
+        
         body {
-            background-color: #f8f9fa;
+            font-family: 'Flame Sans', Arial, sans-serif;
+            background-color: #f8f8f8;
+            padding-bottom: 120px;
         }
-        .menu-item-card {
-            border-radius: 10px;
+        
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 100;
+            padding-top: 20px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .category-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .category-item:hover, .category-item.active {
+            background-color: var(--bk-light);
+            border-left: 4px solid var(--bk-red);
+            color: var(--bk-dark);
+        }
+        
+        .category-item.active {
+            font-weight: bold;
+        }
+        
+        .menu-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--bk-dark);
+            margin: 20px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bk-yellow);
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
             transition: transform 0.2s;
-            height: 100%;
         }
-        .menu-item-card:hover {
-            transform: translateY(-4px);
+        
+        .product-card:hover {
+            transform: translateY(-5px);
         }
-        .product-img {
+        
+        .product-image {
             width: 100%;
-            height: 140px;
+            height: 160px;
             object-fit: cover;
         }
-        .card-body {
-            padding: 0.75rem;
+        
+        .product-details {
+            padding: 15px;
         }
-        .quantity-input {
-            max-width: 60px;
+        
+        .product-title {
+            font-weight: bold;
+            color: var(--bk-dark);
+            margin-bottom: 5px;
         }
-        #cart-summary {
+        
+        .product-desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--bk-red);
+            font-size: 1.1rem;
+        }
+        
+        .product-calories {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .add-btn {
+            background-color: var(--bk-red);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .add-btn:hover {
+            background-color: #c10024;
+        }
+        
+        .add-btn.added {
+            background-color: var(--bk-yellow);
+            color: var(--bk-dark);
+        }
+        
+        .cart-summary {
             position: fixed;
             bottom: 0;
-            left: 0;
+            left: 250px;
             right: 0;
-            background: #fff;
-            box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-            padding: 1rem;
-            z-index: 1000;
-        }
-        #cart-summary .container {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 90;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        
+        .cart-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-icon {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            color: var(--bk-dark);
+        }
+        
+        .cart-count {
+            background-color: var(--bk-red);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        .checkout-btn {
+            background-color: var(--bk-yellow);
+            color: var(--bk-dark);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #e8a800;
+        }
+        
+        .cart-modal .modal-header {
+            background-color: var(--bk-dark);
+            color: white;
+        }
+        
+        .cart-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .customize-link {
+            color: var(--bk-red);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+                margin-bottom: 20px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .cart-summary {
+                left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="container py-4">
-    <h2 class="text-center mb-4">🍽️ Order Delicious Food</h2>
-    <div class="row g-3">
-        {% for product in products %}
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="card menu-item-card h-100">
-                    <img src="{{product.image_url}}" alt="{{ product.name }}" class="product-img">
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title mb-1">{{ product.name }}</h6>
-                        <p class="card-text small text-muted mb-1">{{ product.description|truncatechars:50 }}</p>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-bold text-success">₹{{ product.price }}</span>
-                            <span class="badge bg-secondary">{{ product.category.name }}</span>
+    <!-- Sidebar with categories -->
+    <div class="sidebar">
+        <div class="d-flex flex-column">
+            <div class="category-item active" data-category="all">
+                <i class="fas fa-fire me-2"></i> All Items
+            </div>
+            {% for category in categories %}
+            <div class="category-item" data-category="{{ category.id }}">
+                {{ category.name }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <!-- Featured Category Header -->
+        <div class="menu-header">KOREAN SPICY FEST</div>
+        <!-- Product Grid -->
+        <div class="row" id="product-grid">
+            {% for product in products %}
+            <div class="col-md-6 col-lg-4" data-category="{{ product.category.id }}">
+                <div class="product-card">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                    <div class="product-details">
+                        <div class="product-title">{{ product.name }}</div>
+                        <div class="product-desc">{{ product.description|truncatechars:80 }}</div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="product-price">₹{{ product.price }}</span>
+                            <span class="product-calories">{{ product.calories|default:"500" }} Kcal</span>
                         </div>
-                        <div class="d-flex mt-auto">
-                            <input type="number" min="1" value="1" class="form-control form-control-sm me-2 quantity-input">
-                            <button class="btn btn-sm btn-outline-primary add-to-cart-btn" 
-                                    data-id="{{ product.id }}"
-                                    data-name="{{ product.name }}"
-                                    data-price="{{ product.price }}">
-                                Add
-                            </button>
-                        </div>
+                        <button class="add-btn add-to-cart-btn" 
+                                data-id="{{ product.id }}"
+                                data-name="{{ product.name }}"
+                                data-price="{{ product.price }}"
+                                data-description="{{ product.description }}">
+                            ADD +
+                        </button>
                     </div>
                 </div>
             </div>
-        {% endfor %}
-    </div>
-
-    <div class="mt-5">
-        <h4>Your Cart</h4>
-        <ul id="cart-list" class="list-group mb-3"></ul>
-        <h5>Total: ₹<span id="cart-total">0.00</span></h5>
-    </div>
-</div>
-
-<!-- Floating cart summary -->
-<div id="cart-summary">
-    <div class="container">
-        <div>
-            <strong>Total: ₹<span id="cart-total-footer">0.00</span></strong>
+            {% endfor %}
         </div>
-        <button class="btn btn-success" onclick="checkout()">Proceed to Checkout</button>
     </div>
-</div>
 
-<script>
-    const cart = {};
-    const cartList = document.getElementById("cart-list");
-    const cartTotal = document.getElementById("cart-total");
-    const cartTotalFooter = document.getElementById("cart-total-footer");
+    <!-- Cart Summary -->
+    <div class="cart-summary">
+        <div class="cart-info">
+            <i class="fas fa-shopping-cart cart-icon"></i>
+            <span>CART <span class="cart-count">0</span></span>
+        </div>
+        <div>
+            <span class="me-3">Subtotal: ₹<span id="cart-total">0.00</span></span>
+            <button class="checkout-btn" onclick="checkout()">CHECKOUT</button>
+        </div>
+    </div>
 
-    function updateCartDisplay() {
-        cartList.innerHTML = '';
-        let total = 0;
-
-        for (const id in cart) {
-            const item = cart[id];
-            const li = document.createElement("li");
-            li.className = "list-group-item d-flex justify-content-between align-items-center";
-            li.innerHTML = `
-                <div>
-                    <strong>${item.name}</strong> x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}
+    <!-- Simplified Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Order Summary</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <button class="btn btn-sm btn-danger" onclick="removeItem(${id})">Remove</button>
-            `;
-            total += item.price * item.quantity;
-            cartList.appendChild(li);
-        }
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <strong>Subtotal:</strong>
+                        </div>
+                        <div class="col text-end">
+                            ₹<span id="modalSubtotal">0.00</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <strong>Tax (<span id="taxPercentageDisplay">{{ request.session.tax_percentage|default:10 }}</span>%):</strong>
+                        </div>
+                        <div class="col text-end">
+                            ₹<span id="modalTaxAmount">0.00</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3 border-top pt-2">
+                        <div class="col">
+                            <h5>Total:</h5>
+                        </div>
+                        <div class="col text-end">
+                            <h5>₹<span id="modalGrandTotal">0.00</span></h5>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Amount to pay: ₹<span id="amountToPay">0.00</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmCheckout">
+                        <i class="fas fa-check-circle me-2"></i>Confirm Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        cartTotal.textContent = total.toFixed(2);
-        cartTotalFooter.textContent = total.toFixed(2);
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const cart = {};
+        const cartTotal = document.getElementById("cart-total");
+        const cartModalTotal = document.getElementById("cart-modal-total");
+        const cartCount = document.getElementById("cart-count");
+        const cartEmpty = document.getElementById("cart-empty");
+        const categoryItems = document.querySelectorAll('.category-item');
+        const productGrid = document.getElementById('product-grid');
 
-    function removeItem(id) {
-        delete cart[id];
-        updateCartDisplay();
-    }
+        // Update cart display
+        function updateCartDisplay() {
+            let total = 0;
+            let itemCount = 0;
 
-    // document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-    //     btn.addEventListener("click", function () {
-    //         const id = this.dataset.id;
-    //         const name = this.dataset.name;
-    //         const price = parseFloat(this.dataset.price);
-    //         const quantityInput = this.parentElement.querySelector(".quantity-input");
-    //         const quantity = parseInt(quantityInput.value);
-
-    //         if (cart[id]) {
-    //             cart[id].quantity += quantity;
-    //         } else {
-    //             cart[id] = { id, name, price, quantity };
-    //         }
-
-    //         updateCartDisplay();
-    //     });
-    // });
-    document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-            const id = this.dataset.id;
-            const name = this.dataset.name;
-            const price = parseFloat(this.dataset.price);
-            const quantityInput = this.parentElement.querySelector(".quantity-input");
-            const quantity = parseInt(quantityInput.value);
-
-            if (cart[id]) {
-                cart[id].quantity += quantity;
-            } else {
-                cart[id] = { id, name, price, quantity };
+            for (const id in cart) {
+                const item = cart[id];
+                const li = document.createElement("li");
+                li.className = "cart-item";
+                li.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div class="small text-muted">${item.description || ''}</div>
+                        </div>
+                        <div class="text-end">
+                            <div>₹${(item.price * item.quantity).toFixed(2)}</div>
+                            <div class="small">Qty: ${item.quantity}</div>
+                        </div>
+                    </div>
+                    <a href="#" class="customize-link">Customize</a>
+                `;
+                total += item.price * item.quantity;
+                itemCount += item.quantity;
             }
 
-            updateCartDisplay();
-
-            // ✅ Change button style to indicate it's added
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-success');
-            this.textContent = "Added";
-
-            // Optional: revert back after 2 seconds
-            setTimeout(() => {
-                this.classList.remove('btn-success');
-                this.classList.add('btn-outline-primary');
-                this.textContent = "Add";
-            }, 2000);
-        });
-    });
-
-
-    function checkout() {
-        if (Object.keys(cart).length === 0) {
-            alert("🛒 Your cart is empty.");
-        } else {
-            alert("🚀 Proceeding to checkout...\n(To be implemented: redirect to checkout page or send cart to backend.)");
-            // TODO: Redirect or send POST request with cart details
+            cartTotal.textContent = total.toFixed(2);
+            if(cartCount){
+                cartCount.innerText = itemCount;
+            }
         }
-    }
-</script>
+
+        // Add to cart functionality
+        document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+                const id = this.dataset.id;
+                const name = this.dataset.name;
+                const price = parseFloat(this.dataset.price);
+                const description = this.dataset.description;
+                const quantity = 1;
+
+                if (cart[id]) {
+                    cart[id].quantity += quantity;
+                } else {
+                    cart[id] = { id, name, price, quantity, description };
+                }
+
+                updateCartDisplay();
+
+                // Visual feedback
+                this.classList.add('added');
+                this.textContent = "✓ ADDED";
+                setTimeout(() => {
+                    this.classList.remove('added');
+                    this.textContent = "ADD +";
+                }, 2000);
+            });
+        });
+
+        // Category filtering
+        categoryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                categoryItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const categoryId = this.dataset.category;
+                const products = productGrid.querySelectorAll('[data-category]');
+                products.forEach(product => {
+                    if (categoryId === 'all' || product.dataset.category === categoryId) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        function checkout() {
+            if (Object.keys(cart).length === 0) {
+                alert("Your cart is empty. Please add some items before checkout.");
+                return;
+            }
+
+            // Calculate subtotal
+            const subtotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const taxPercentage = parseFloat(document.getElementById('taxPercentageDisplay').textContent) || 10;
+            const taxAmount = subtotal * (taxPercentage / 100);
+            const grandTotal = subtotal + taxAmount;
+            const checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+
+            document.getElementById('modalSubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('modalTaxAmount').textContent = taxAmount.toFixed(2);
+            document.getElementById('modalGrandTotal').textContent = grandTotal.toFixed(2);
+            document.getElementById('amountToPay').textContent = grandTotal.toFixed(2);
+
+            checkoutModal.show();
+        }
+
+        // Handle the final checkout confirmation
+        document.getElementById('confirmCheckout').addEventListener('click', function() {
+            const subtotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const taxPercentage = parseFloat(document.getElementById('taxPercentageDisplay').textContent) || 10;
+            const taxAmount = subtotal * (taxPercentage / 100);
+            const grandTotal = subtotal + taxAmount;
+
+            const saleData = {
+                sub_total: subtotal,
+                grand_total: grandTotal,
+                tax_amount: taxAmount,
+                tax_percentage: taxPercentage,
+                amount_payed: grandTotal,
+                amount_change: 0,
+                products: Object.values(cart).map(item => ({
+                    id: item.id,
+                    price: item.price,
+                    quantity: item.quantity,
+                    total_product: (item.price * item.quantity).toFixed(2)
+                })),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+
+            fetch('/sales/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(saleData)
+            })
+            .then(response => {
+                console.log("Created");
+            })
+            .then(data => {
+                try{
+                    for (const id in cart) {
+                        delete cart[id];
+                    }
+                    updateCartDisplay();
+                    bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+                    alert('Order completed successfully!');
+                    window.location.href = '{% url "sales:sales_list" %}';
+                }catch(err){
+                    console.log(err);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error processing your order: ' + error.message);
+            });
+        });
+    </script>
 </body>
 </html>

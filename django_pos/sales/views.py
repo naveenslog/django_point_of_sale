@@ -28,6 +28,16 @@ def sales_list_view(request):
 
 
 @login_required(login_url="/accounts/login/")
+def sales_list_customer_view(request):
+    customer = Customer.objects.filter(user_id=request.user.id).first()
+    print(customer, "customercustomercustomercustomer")
+    context = {
+        "active_icon": "sales",
+        "sales": Sale.objects.filter(customer=customer)
+    }
+    return render(request, "sales/sales_customer.html", context=context)
+
+@login_required(login_url="/accounts/login/")
 def sales_add_view(request):
     context = {
         "active_icon": "sales",
@@ -36,23 +46,31 @@ def sales_add_view(request):
 
     if request.method == 'POST':
         if is_ajax(request=request):
-            # Save the POST arguments
             data = json.load(request)
+            tax_percentage = float(data.get('tax_percentage', settings.DEFAULT_TAX_PERCENTAGE))
+            customer_id = data.get("customer", None)
+            order_by = None
+            if customer_id is not None:
+                # Created by sales man
+                order_by = "salesman"
+                customer = Customer.objects.get(id=int(data['customer']))
+            else:
+                # Created by customer directly
+                order_by = "customer"
+                customer = Customer.objects.get(user_id=request.user.id)
 
             sale_attributes = {
-                "customer": Customer.objects.get(id=int(data['customer'])),
+                "customer": customer,
                 "sub_total": float(data["sub_total"]),
                 "grand_total": float(data["grand_total"]),
                 "tax_amount": float(data["tax_amount"]),
-                "tax_percentage": float(data["tax_percentage"]),
+                "tax_percentage": tax_percentage,
                 "amount_payed": float(data["amount_payed"]),
                 "amount_change": float(data["amount_change"]),
             }
             try:
-                # Create the sale
                 new_sale = Sale.objects.create(**sale_attributes)
                 new_sale.save()
-                # Create the sale details
                 products = data["products"]
 
                 for product in products:
@@ -63,21 +81,16 @@ def sales_add_view(request):
                         "quantity": product["quantity"],
                         "total_detail": product["total_product"]
                     }
-                    sale_detail_new = SaleDetail.objects.create(
-                        **detail_attributes)
+                    sale_detail_new = SaleDetail.objects.create(**detail_attributes)
                     sale_detail_new.save()
-
-                print("Sale saved")
-
-                messages.success(
-                    request, 'Sale created successfully!', extra_tags="success")
+                messages.success(request, 'Sale created successfully!', extra_tags="success")
 
             except Exception as e:
-                messages.success(
-                    request, 'There was an error during the creation!', extra_tags="danger")
-
-        return redirect('sales:sales_list')
-
+                messages.success(request, 'There was an error during the creation!', extra_tags="danger")
+        if order_by == "salesman":
+            return redirect('sales:sales_list')
+        else:
+            return redirect('sales:sales_list_customer')
     return render(request, "sales/sales_add.html", context=context)
 
 
@@ -105,6 +118,30 @@ def sales_details_view(request, sale_id):
         messages.success(
             request, 'There was an error getting the sale!', extra_tags="danger")
         print(e)
+        return redirect('sales:sales_list')
+    
+@login_required(login_url="/accounts/login/")
+def sales_details_customer(request, sale_id):
+    """
+    Args:
+        request:
+        sale_id: ID of the sale to view
+    """
+    try:
+        # Get the sale
+        sale = Sale.objects.get(id=sale_id)
+
+        # Get the sale details
+        details = SaleDetail.objects.filter(sale=sale)
+
+        context = {
+            "active_icon": "sales",
+            "sale": sale,
+            "details": details,
+        }
+        return render(request, "sales/sales_details_customer.html", context=context)
+    except Exception as e:
+        messages.success(request, 'There was an error getting the sale!', extra_tags="danger")
         return redirect('sales:sales_list')
 
 

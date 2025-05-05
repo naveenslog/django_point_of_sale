@@ -36,9 +36,10 @@ COPY . /app/
 RUN mkdir -p /app/staticfiles && \
     chown -R 1000:1000 /app/staticfiles
 
-RUN python manage.py makemigrations tenant
-RUN python manage.py migrate_schemas --shared
+# RUN python manage.py makemigrations tenant
+# RUN python manage.py migrate_schemas --shared
 
 EXPOSE 8000
 
-CMD ["gunicorn", "django_pos.wsgi:application", "--bind", "0.0.0.0:8000"]
+# CMD ["gunicorn", "django_pos.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
